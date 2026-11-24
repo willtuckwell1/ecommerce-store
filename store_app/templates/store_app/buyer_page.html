@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>Buyer Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'store_app/css/style.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <span class="brand"><i class="fa-solid fa-store"></i> The Store</span>
+        <div class="nav-links">
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'home' %}'"><i class="fa-solid fa-house"></i> Home</button>
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'buyer_page' %}'"><i class="fa-solid fa-bag-shopping"></i> Products</button>
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'cart' %}'"><i class="fa-solid fa-cart-shopping"></i> Cart</button>
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'checkout' %}'"><i class="fa-solid fa-credit-card"></i> Checkout</button>
+        </div>
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button class="nav-button" type="submit"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <section class="store-hero">
+            <div>
+                <span class="eyebrow">MEMBER STORE</span>
+                <h1>Find your next favourite.</h1>
+                <p>Browse a considered collection, save what catches your eye, and check out when you are ready.</p>
+            </div>
+            <div class="hero-stat"><strong>{{ products|length }}</strong><span>products to explore</span></div>
+        </section>
+        <div class="page-header">
+            <h2><i class="fa-solid fa-bag-shopping"></i> Buyer Dashboard</h2>
+            <p class="subtitle">Browse products, manage your cart, and complete your checkout from one place.</p>
+        </div>
+
+        <div class="top-actions" style="margin-bottom: 28px;">
+            <button class="secondary-button" type="button" onclick="window.location.href='{% url 'cart' %}'"><i class="fa-solid fa-cart-shopping"></i> View Cart</button>
+            {% if cart_has_items %}
+                <button type="button" onclick="window.location.href='{% url 'checkout' %}'"><i class="fa-solid fa-arrow-right"></i> Checkout</button>
+            {% endif %}
+        </div>
+
+        {% if products %}
+            <h3><i class="fa-solid fa-tags"></i> Available Products</h3>
+            <div class="product-grid">
+                {% for product in products %}
+                    <div class="product-card">
+                        <div class="product-media"><i class="fa-solid fa-box-open"></i></div>
+                        <div class="product-body">
+                            <p class="product-name">{{ product.name }}</p>
+                            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i></div>
+                            <p class="product-desc">{{ product.description }}</p>
+                            <div class="badge-row">
+                                <span class="badge badge-price"><i class="fa-solid fa-tag"></i> £{{ product.price }}</span>
+                                {% if product.stock > 5 %}
+                                    <span class="badge badge-stock"><i class="fa-solid fa-boxes-stacked"></i> {{ product.stock }} in stock</span>
+                                {% elif product.stock > 0 %}
+                                    <span class="badge badge-stock low"><i class="fa-solid fa-triangle-exclamation"></i> Only {{ product.stock }} left</span>
+                                {% else %}
+                                    <span class="badge badge-stock out"><i class="fa-solid fa-ban"></i> Out of stock</span>
+                                {% endif %}
+                            </div>
+                            <button class="secondary-button" type="button" onclick="window.location.href='{% url 'product_review' product.pk %}'"><i class="fa-solid fa-comment"></i> Reviews</button>
+                            <form method="POST" action="{% url 'add_to_cart' product.pk %}" class="qty-form">
+                                {% csrf_token %}
+                                <input id="quantity-{{ product.pk }}" type="number" name="quantity" min="1" max="{{ product.stock }}" value="1">
+                                <button type="submit"><i class="fa-solid fa-cart-plus"></i> Add</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-box-open"></i>
+                <p>No products are available at the moment.</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

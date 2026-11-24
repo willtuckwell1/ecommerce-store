@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>Register</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'store_app/css/style.css' %}">
+</head>
+<body>
+    <div class="auth-shell">
+        <div class="container">
+            <div class="auth-logo"><i class="fa-solid fa-user-plus"></i></div>
+            <h2>Create Account</h2>
+            <p class="subtitle">Create a buyer or vendor account to start using the store.</p>
+
+            {% if error %}
+                <p class="error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <label><i class="fa-solid fa-user"></i> Username</label>
+                <input type="text" name="username">
+
+                <label><i class="fa-solid fa-envelope"></i> Email</label>
+                <input type="email" name="email">
+
+                <label><i class="fa-solid fa-lock"></i> Password</label>
+                <input type="password" name="password">
+
+                <label><i class="fa-solid fa-lock"></i> Confirm Password</label>
+                <input type="password" name="confirm_password">
+
+                <label><i class="fa-solid fa-id-badge"></i> Account type</label>
+                <select name="account_type">
+                    <option value="buyer">Buyer</option>
+                    <option value="vendor">Vendor</option>
+                </select>
+
+                <div class="action-row">
+                    <button type="submit" style="flex:1; justify-content:center;"><i class="fa-solid fa-user-plus"></i> Register</button>
+                    <button class="secondary-button" type="button" style="flex:1; justify-content:center;" onclick="window.location.href='{% url 'login' %}'"><i class="fa-solid fa-arrow-left"></i> Back to Login</button>
+                </div>
+            </form>
+
+            <p class="auth-footer">
+                Already have an account? <a href="{% url 'login' %}">Login here</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

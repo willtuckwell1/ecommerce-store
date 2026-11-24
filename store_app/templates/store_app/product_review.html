@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>Product Reviews</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'store_app/css/style.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <span class="brand"><i class="fa-solid fa-store"></i> The Store</span>
+        <div class="nav-links">
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'home' %}'"><i class="fa-solid fa-house"></i> Home</button>
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'buyer_page' %}'"><i class="fa-solid fa-bag-shopping"></i> Products</button>
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'cart' %}'"><i class="fa-solid fa-cart-shopping"></i> Cart</button>
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'checkout' %}'"><i class="fa-solid fa-credit-card"></i> Checkout</button>
+        </div>
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button class="nav-button" type="submit"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+        </form>
+    </div>
+
+    <div class="container">
+    <div class="page-header">
+        <h2><i class="fa-solid fa-comment"></i> Reviews for {{ product.name }}</h2>
+        <p class="subtitle">Leave feedback for this product and review what other buyers have said.</p>
+    </div>
+
+    <form method="POST" action="{% url 'review_product' %}">
+        {% csrf_token %}
+        <input type="hidden" name="product_id" value="{{ product.pk }}">
+
+        <label><i class="fa-solid fa-star"></i> Rating</label>
+        <select name="rating">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5" selected>5</option>
+        </select>
+
+        <label><i class="fa-solid fa-comment-dots"></i> Comment</label>
+        <textarea name="comment" rows="4"></textarea>
+
+        <button type="submit"><i class="fa-solid fa-paper-plane"></i> Submit Review</button>
+    </form>
+
+    <h3 style="margin-top:32px;"><i class="fa-solid fa-comments"></i> Existing Reviews</h3>
+    {% if reviews %}
+        <ul>
+            {% for review in reviews %}
+                <li>
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <strong>{{ review.user.username }}</strong>
+                        <span class="stars">
+                            {% for _ in "12345" %}<i class="fa-solid fa-star"></i>{% endfor %}
+                            ({{ review.rating }})
+                        </span>
+                    </div>
+                    <div style="margin: 8px 0;">
+                        {% if review.is_verified %}
+                            <span class="verified"><i class="fa-solid fa-circle-check"></i> Verified Purchase</span>
+                        {% else %}
+                            <span class="unverified"><i class="fa-solid fa-circle-exclamation"></i> Unverified Review</span>
+                        {% endif %}
+                    </div>
+                    <p style="margin:0; color: var(--ink-soft);">{{ review.comment }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <div class="empty-state">
+            <i class="fa-solid fa-comment-slash"></i>
+            <p>No reviews yet.</p>
+        </div>
+    {% endif %}
+
+    <div class="action-row">
+        <button class="secondary-button" type="button" onclick="window.location.href='{% url 'buyer_page' %}'">Back to Buyer Dashboard</button>
+    </div>
+    </div>
+</body>
+</html>

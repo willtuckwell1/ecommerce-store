@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>Cart</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'store_app/css/style.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <span class="brand"><i class="fa-solid fa-store"></i> The Store</span>
+        <div class="nav-links">
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'home' %}'"><i class="fa-solid fa-house"></i> Home</button>
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'buyer_page' %}'"><i class="fa-solid fa-bag-shopping"></i> Products</button>
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'cart' %}'"><i class="fa-solid fa-cart-shopping"></i> Cart</button>
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'checkout' %}'"><i class="fa-solid fa-credit-card"></i> Checkout</button>
+        </div>
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button class="nav-button" type="submit"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <h2><i class="fa-solid fa-cart-shopping"></i> Your Cart</h2>
+            <p class="subtitle">Review the items you selected before moving on to checkout.</p>
+        </div>
+
+        {% if cart_error %}
+            <p class="error"><i class="fa-solid fa-circle-exclamation"></i> {{ cart_error }}</p>
+        {% endif %}
+
+        {% if products %}
+            <ul>
+                {% for item in products %}
+                    <li>
+                        <div style="display:flex; justify-content:space-between; gap:12px; align-items:center; flex-wrap:wrap;">
+                            <div>
+                                <strong>{{ item.product.name }}</strong>
+                                <div class="badge-row" style="margin-top:6px;">
+                                    <span class="badge badge-price"><i class="fa-solid fa-tag"></i> ${{ item.product.price }}</span>
+                                    <span class="badge badge-stock"><i class="fa-solid fa-boxes-stacked"></i> {{ item.product.stock }} available</span>
+                                </div>
+                                <div style="margin-top:8px; color: var(--ink-soft);">Quantity: {{ item.quantity }} &middot; Line total: <strong>${{ item.item_total }}</strong></div>
+                            </div>
+                            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                                <form method="POST" action="{% url 'update_cart' item.product.pk %}" class="qty-form">
+                                    {% csrf_token %}
+                                    <input type="number" name="quantity" min="0" max="{{ item.product.stock }}" value="{{ item.quantity }}">
+                                    <button type="submit"><i class="fa-solid fa-rotate"></i> Update</button>
+                                </form>
+                                <form method="POST" action="{% url 'remove_from_cart' item.product.pk %}">
+                                    {% csrf_token %}
+                                    <button class="secondary-button" type="submit"><i class="fa-solid fa-trash"></i> Remove</button>
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div class="summary-card">
+                <span><i class="fa-solid fa-receipt"></i> Order Total</span>
+                <strong>${{ total_cost }}</strong>
+            </div>
+            <div class="action-row">
+                <button type="button" onclick="window.location.href='{% url 'checkout' %}'"><i class="fa-solid fa-arrow-right"></i> Checkout</button>
+                <button class="secondary-button" type="button" onclick="window.location.href='{% url 'buyer_page' %}'"><i class="fa-solid fa-arrow-left"></i> Back to Buyer Dashboard</button>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <p>Your cart is empty.</p>
+            </div>
+            <div class="action-row">
+                <button class="secondary-button" type="button" onclick="window.location.href='{% url 'buyer_page' %}'"><i class="fa-solid fa-arrow-left"></i> Back to Buyer Dashboard</button>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

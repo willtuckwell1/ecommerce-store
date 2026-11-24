@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>Reddit Feed</title>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'store_app/css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h2><i class="fa-brands fa-reddit"></i> Posts from Reddit</h2>
+            <p class="subtitle">Live discussion feed pulled in from Reddit's public API.</p>
+        </div>
+
+        {% if error_message %}
+            <p class="error"><i class="fa-solid fa-circle-exclamation"></i> {{ error_message }}</p>
+        {% elif posts %}
+            <ul>
+                {% for post in posts %}
+                    <li>
+                        <strong>{{ post.title }}</strong>
+                        <div class="subtitle" style="margin: 6px 0;">by {{ post.author }}</div>
+                        <a href="{{ post.url }}" target="_blank" style="color: var(--primary); font-weight: 700; text-decoration: none;"><i class="fa-solid fa-arrow-up-right-from-square"></i> View Post</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="empty-state">
+                <i class="fa-brands fa-reddit"></i>
+                <p>No posts available.</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

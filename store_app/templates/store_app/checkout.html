@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>Checkout</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'store_app/css/style.css' %}">
+</head>
+<body>
+    <div class="navbar">
+        <span class="brand"><i class="fa-solid fa-store"></i> The Store</span>
+        <div class="nav-links">
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'home' %}'"><i class="fa-solid fa-house"></i> Home</button>
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'buyer_page' %}'"><i class="fa-solid fa-bag-shopping"></i> Products</button>
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'cart' %}'"><i class="fa-solid fa-cart-shopping"></i> Cart</button>
+            <button class="nav-button" type="button" onclick="window.location.href='{% url 'checkout' %}'"><i class="fa-solid fa-credit-card"></i> Checkout</button>
+        </div>
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button class="nav-button" type="submit"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <div class="page-header">
+            <h2><i class="fa-solid fa-credit-card"></i> Checkout</h2>
+            <p class="subtitle">Confirm your order details and complete the purchase.</p>
+        </div>
+
+        {% if products %}
+            <ul>
+                {% for item in products %}
+                    <li style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                        <span><strong>{{ item.product.name }}</strong> &middot; Qty: {{ item.quantity }}</span>
+                        <span class="badge badge-price"><i class="fa-solid fa-tag"></i> ${{ item.item_total }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div class="summary-card">
+                <span><i class="fa-solid fa-receipt"></i> Order Total</span>
+                <strong>${{ total_cost }}</strong>
+            </div>
+
+            <div class="action-row">
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" name="confirm" value="yes"><i class="fa-solid fa-circle-check"></i> Confirm Purchase</button>
+                </form>
+                <button class="secondary-button" type="button" onclick="window.location.href='{% url 'cart' %}'"><i class="fa-solid fa-arrow-left"></i> Back to Cart</button>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <p>Your cart is empty. Add products before checking out.</p>
+            </div>
+            <div class="action-row">
+                <button class="secondary-button" type="button" onclick="window.location.href='{% url 'cart' %}'"><i class="fa-solid fa-arrow-left"></i> Back to Cart</button>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
